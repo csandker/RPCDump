@@ -149,6 +149,9 @@
   <ItemGroup>
     <ClCompile Include="RPCDump.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="rpc_resolve.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

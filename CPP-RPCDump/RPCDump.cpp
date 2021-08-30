@@ -7,11 +7,11 @@
 
 #include <windows.h>
 #include <winnt.h>
-
-#include <stdio.h>
-
+#include <iostream>
 #include <rpc.h>
 #include <rpcdce.h>
+#include "rpc_resolve.h"
+#include <algorithm>
 
 static int verbosity = 0;
 
@@ -100,8 +100,16 @@ int try_protocol(RPC_WSTR server, RPC_WSTR protocol)
             if (UuidToString(&(IfId.Uuid), &str) == RPC_S_OK) {
                 wprintf(L"IfId: %s version %d.%d\n", str, IfId.VersMajor,
                     IfId.VersMinor);
+                std::wstring key = (wchar_t*)str;
+                std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+                if (KNOWN_ENDPOINTS.find(key) != KNOWN_ENDPOINTS.end()) {
+                    wprintf(L"Known Endpoint: %s.\n", KNOWN_ENDPOINTS.at(key));
+                }
                 RpcStringFree(&str);
             }
+            
+            
+            //map_start_values.
 
             //
             // Print Annot
@@ -320,7 +328,6 @@ wmain(int argc, wchar_t* argv[], wchar_t* envp[])
         wprintf(L"[!] Usage: %s <server>\n", argv[0]);
         exit(1);
     }
-
     for (i = 0; i < NUM_PROTOCOLS; i++) {
         protseq = protocols[i];
         wprintf(L"## Testing protseq.: %s\n\n", protocols[i]);
