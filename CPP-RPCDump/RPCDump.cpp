@@ -107,9 +107,6 @@ int try_protocol(RPC_WSTR server, RPC_WSTR protocol)
                 }
                 RpcStringFree(&str);
             }
-            
-            
-            //map_start_values.
 
             //
             // Print Annot
@@ -223,9 +220,19 @@ int try_protocol(RPC_WSTR server, RPC_WSTR protocol)
                     for (i = 0; i < pVector->Count; i++) {
                         RPC_WSTR str = NULL;
                         UuidToString(&pVector->IfId[i]->Uuid, &str);
-                        wprintf(L"  %s v%d.%d\n", str ? str : (RPC_WSTR)L"(null)",
+                        std::wstring key = (wchar_t*)str;
+                        std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+                        LPCWSTR szIfIIDInfo = NULL;
+                        if (KNOWN_IIDS.find(key) != KNOWN_IIDS.end()) {
+                            szIfIIDInfo = KNOWN_IIDS.at(key);
+                        }
+                        else if (KNOWN_ENDPOINTS.find(key) != KNOWN_ENDPOINTS.end()) {
+                            szIfIIDInfo = KNOWN_ENDPOINTS.at(key);
+                        }
+                        wprintf(L"  %s v%d.%d (%s)\n", str ? str : (RPC_WSTR)L"(null)",
                             pVector->IfId[i]->VersMajor,
-                            pVector->IfId[i]->VersMinor);
+                            pVector->IfId[i]->VersMinor,
+                            szIfIIDInfo ? szIfIIDInfo : L"");
                         if (str) RpcStringFree(&str);
                     }
                     RpcIfIdVectorFree(&pVector);
